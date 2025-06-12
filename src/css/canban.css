@@ -337,8 +337,8 @@
 }
 
 .main-kanban-item.dragged {
-  width: 240px !important;
-  min-width: 240px !important;
+  width: 235px !important;
+  min-width: 235px !important;
   position: absolute;
   z-index: 999;
   pointer-events: none;
