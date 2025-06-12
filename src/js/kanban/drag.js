@@ -31,7 +31,7 @@ export default function drag(main, el) {
         item.style.top = `${event.pageY - shiftY}px`;
       }
     }
-  
+
     if (e.target.dataset.toggle !== 'item-remove') {
       e.preventDefault();
       if (draggedEl) return;
