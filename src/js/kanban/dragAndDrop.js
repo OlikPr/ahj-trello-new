@@ -34,7 +34,13 @@ export default function dragAndDrop(main) {
       e.target.classList.remove('dragged');
     }
   });
-
+  let dropIndicator = null;
+  function createDropIndicator() {
+    dropIndicator = document.createElement('div');
+    dropIndicator.className = 'drop-indicator';
+    document.body.appendChild(dropIndicator);
+    return dropIndicator;
+  }
   main.addEventListener('dragstart', (e) => {
     if (e.target.classList.contains('main-kanban-item')) {
       e.target.classList.add('dragging');
@@ -44,6 +50,7 @@ export default function dragAndDrop(main) {
       setTimeout(() => {
         e.target.style.opacity = '0.4';
       }, 0);
+      dropIndicator = createDropIndicator(); 
     }
   });
 
@@ -53,6 +60,12 @@ export default function dragAndDrop(main) {
       document.body.style.cursor = '';
       e.target.style.cursor = '';
       e.target.style.opacity = '1';
+      if (dropIndicator) {
+      dropIndicator.remove();
+      dropIndicator = null;
+    }
+    const dragged = document.querySelector('.dragged');
+    if (dragged) dragged.classList.remove('dragged');
     }
   });
 
@@ -68,6 +81,32 @@ export default function dragAndDrop(main) {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
     elemBelow = e.target;
+     if (targetItem) {
+      const rect = targetItem.getBoundingClientRect();
+      const center = rect.top + rect.height / 2;
+      if (e.clientY < center) {
+        dropIndicator.style.width = `${rect.width}px`;
+        dropIndicator.style.position = 'fixed';
+        dropIndicator.style.left = `${rect.left}px`;
+        dropIndicator.style.top = `${rect.top}px`;
+        targetItem.before(dropIndicator);
+      } else {
+        dropIndicator.style.width = `${rect.width}px`;
+        dropIndicator.style.position = 'fixed';
+        dropIndicator.style.left = `${rect.left}px`;
+        dropIndicator.style.top = `${rect.bottom}px`;
+        targetItem.after(dropIndicator);
+      }
+      dropIndicator.classList.add('active');
+    } else if (columnBody) {
+      const rect = columnBody.getBoundingClientRect();
+      dropIndicator.style.width = `${rect.width - 20}px`;
+      dropIndicator.style.position = 'fixed';
+      dropIndicator.style.left = `${rect.left + 10}px`;
+      dropIndicator.style.top = `${rect.bottom - 10}px`;
+      columnBody.append(dropIndicator);
+      dropIndicator.classList.add('active');
+    }
   });
 
   main.addEventListener('drop', (e) => {

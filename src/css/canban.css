@@ -579,3 +579,15 @@ form {
 .btn-close {
   border-radius: 25px;
 }
+.drop-indicator {
+  height: 4px;
+  background: #2d7ff9;
+  border-radius: 2px;
+  margin: 2px 0;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.drop-indicator.active {
+  opacity: 1; 
+}
