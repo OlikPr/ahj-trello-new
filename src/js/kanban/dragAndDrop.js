@@ -11,8 +11,12 @@ export default function dragAndDrop(main) {
       document.body.style.cursor = 'grabbing';
       e.target.style.cursor = 'grabbing';
       e.dataTransfer.setData('text/plain', e.target.dataset.id);
+      setTimeout(() => {
+        e.target.style.opacity = '0.4';
+      }, 0);
     }
   });
+    
   main.addEventListener('dragend', (e) => {
     if (e.target.classList.contains('main-kanban-item')) {
       e.target.classList.remove('dragging');
@@ -37,15 +41,21 @@ export default function dragAndDrop(main) {
 
   main.addEventListener('drop', (e) => {
     const todo = main.querySelector(`[data-id="${e.dataTransfer.getData('text/plain')}"]`);
-
+    const dropColumn = e.target.closest('.main-kanban-column-body');
     if (elemBelow === todo) {
       return;
     }
-
+    const afterElement = getDragAfterElement(dropColumn, e.clientY);
+    
+        if (afterElement) {
+      dropColumn.insertBefore(todo, afterElement);
+    } else {
+      dropColumn.appendChild(todo);
+    }
     if (elemBelow.tagName === 'span' || elemBelow.className === 'tasks-kanban-item-text' || elemBelow.className === 'tasks-kanban-item') {
       elemBelow = elemBelow.closest('.main-kanban-item');
     }
-
+    updateLocalStorage(todo, currentColumn, dropColumn);
     if (elemBelow.classList.contains('main-kanban-item')) {
       const center = elemBelow.getBoundingClientRect().y
       + elemBelow.getBoundingClientRect().height / 2;
@@ -70,7 +80,7 @@ export default function dragAndDrop(main) {
       const columnItems = e.target.querySelector('.main-kanban-column-items');
 
       const keyForColumnItems = columnItems.closest('.main-kanban-column').dataset.id;
-      // eslint-disable-next-line no-prototype-builtins
+     
       if (!columsLocal.hasOwnProperty(keyForColumnItems)) columsLocal[keyForColumnItems] = [];
 
       columsLocal[keyForColumnItems].push(todoLocal[0]);
@@ -83,4 +93,34 @@ export default function dragAndDrop(main) {
       }
     }
   });
+  function getDragAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll('.main-kanban-item:not(.dragging)')];
+    
+    return draggableElements.reduce((closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+      
+      if (offset < 0 && offset > closest.offset) {
+        return { offset: offset, element: child };
+      } else {
+        return closest;
+      }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+  }
+  function updateLocalStorage(item, fromColumn, toColumn) {
+    const columns = JSON.parse(localStorage.columns || '{}');
+    const fromKey = fromColumn.closest('.main-kanban-column').dataset.id;
+    const toKey = toColumn.closest('.main-kanban-column').dataset.id;
+    const itemId = Number(item.dataset.id);
+
+   
+    const taskIndex = columns[fromKey].findIndex(t => t.id === itemId);
+    if (taskIndex === -1) return;
+
+    const [task] = columns[fromKey].splice(taskIndex, 1);
+    if (!columns[toKey]) columns[toKey] = [];
+    columns[toKey].push(task);
+
+    localStorage.setItem('columns', JSON.stringify(columns));
+  }
 }
