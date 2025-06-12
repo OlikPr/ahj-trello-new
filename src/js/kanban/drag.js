@@ -127,7 +127,7 @@ export default function drag(main, el) {
         localStorage.setItem('columns', JSON.stringify(columsLocal));
         draggedEl = null;
       });
-    }
-  });
+    };
+  };
+});
 }
-
