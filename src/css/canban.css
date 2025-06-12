@@ -340,11 +340,10 @@
   width: 240px !important;
   min-width: 240px !important;
   position: absolute;
-  z-index: 1000;
+  z-index: 999;
   pointer-events: none;
   background: #fff;
   border:1px solid rgb(53, 62, 145);
-  transform: rotate(2deg);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);;
   opacity: 0.9;
 }
