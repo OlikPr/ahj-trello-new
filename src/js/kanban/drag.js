@@ -14,16 +14,29 @@ export default function drag(main, el) {
   let draggedEl = null;
   let dataId = null;
   let wrapper = null;
-
+  let startX, startY;
+  let hasMoved = false;
+  
   item.addEventListener('mousedown', (e) => {
     const coords = getCoords(item);
     const shiftX = e.pageX - coords.left;
     const shiftY = e.pageY - coords.top;
 
     function moveAt(evt) {
-      item.style.left = `${evt.pageX - shiftX}px`;
-      item.style.top = `${evt.pageY - shiftY}px`;
+      if (Math.abs(evt.clientX - startX) > 5 || Math.abs(evt.clientY - startY) > 5) {
+        hasMoved = true;
+      }
+      
+      if (hasMoved) {
+        item.style.left = `${evt.pageX - shiftX}px`;
+        item.style.top = `${evt.pageY - shiftY}px`;
+      }
     }
+    function handleMouseUp(evt) {
+      if (!hasMoved) {
+        cleanup();
+        return;
+      }
 
     if (e.target.dataset.toggle !== 'item-remove') {
       e.preventDefault();
