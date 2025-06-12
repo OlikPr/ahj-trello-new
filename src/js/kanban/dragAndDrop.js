@@ -7,7 +7,7 @@ export default function dragAndDrop(main) {
 
   main.addEventListener('dragstart', (e) => {
     if (e.target.classList.contains('main-kanban-item')) {
-      e.target.classList.add('dragged');
+     
       e.dataTransfer.setData('text/plain', e.target.dataset.id);
     }
   });
