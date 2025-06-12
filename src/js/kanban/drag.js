@@ -14,30 +14,24 @@ export default function drag(main, el) {
   let draggedEl = null;
   let dataId = null;
   let wrapper = null;
-  let startX, startY;
-  let hasMoved = false;
   
   item.addEventListener('mousedown', (e) => {
     const coords = getCoords(item);
     const shiftX = e.pageX - coords.left;
     const shiftY = e.pageY - coords.top;
+    let hasMoved = false;
 
-    function moveAt(evt) {
-      if (Math.abs(evt.clientX - startX) > 5 || Math.abs(evt.clientY - startY) > 5) {
+    function moveAt(event) {
+      if (Math.abs(event.clientX - e.clientX) > 5 || Math.abs(event.clientY - e.clientY) > 5) {
         hasMoved = true;
       }
       
       if (hasMoved) {
-        item.style.left = `${evt.pageX - shiftX}px`;
-        item.style.top = `${evt.pageY - shiftY}px`;
+        item.style.left = `${event.pageX - shiftX}px`;
+        item.style.top = `${event.pageY - shiftY}px`;
       }
     }
-    function handleMouseUp(evt) {
-      if (!hasMoved) {
-        cleanup();
-        return;
-      }
-
+    
     if (e.target.dataset.toggle !== 'item-remove') {
       e.preventDefault();
       if (draggedEl) return;
@@ -55,19 +49,20 @@ export default function drag(main, el) {
 
       moveAt(e);
 
-      const mouseMoving = function (evt) {
-        evt.preventDefault();
+      const mouseMoving = function (event) {
+        event.preventDefault();
         if (!draggedEl) return;
-        moveAt(evt);
+        moveAt(event);
       };
 
       container.addEventListener('mousemove', mouseMoving);
-      container.addEventListener('mouseup', (evt) => {
+      
+      const mouseUpHandler = (event) => {
         if (!draggedEl) return;
 
         wrapper.parentNode.removeChild(wrapper);
 
-        const closest = document.elementFromPoint(evt.clientX, evt.clientY);
+        const closest = document.elementFromPoint(event.clientX, event.clientY);
         const columsLocal = JSON.parse(localStorage.columns);
         const newColumn = closest.closest('.main-kanban-column');
         const newColumnId = newColumn.dataset.id;
@@ -78,10 +73,10 @@ export default function drag(main, el) {
           let itemsColumn = closest.closest('.main-kanban-item');
 
           if (itemsColumn) {
-            /* eslint-disable */
-            const center = itemsColumn.getBoundingClientRect().y + itemsColumn.getBoundingClientRect().height / 2;
+            const center = itemsColumn.getBoundingClientRect().y 
+              + itemsColumn.getBoundingClientRect().height / 2;
 
-            if (e.clientY > center) {
+            if (event.clientY > center) {
               if (itemsColumn.nextElementSibling !== null) {
                 itemsColumn = itemsColumn.nextElementSibling;
               } else {
@@ -94,22 +89,26 @@ export default function drag(main, el) {
             item.style.top = null;
             item.style.left = null;
 
-          if (dataId === newColumnId) {
-            /* eslint-disable */
-            const indexBefore = columsLocal[dataId].findIndex((i) => i.id === +itemsColumn.dataset.id);
-            columsLocal[dataId].splice(indexBefore, 0, todoLocal[0]);
-          } else {
-              const indexBefore = columsLocal[newColumnId].findIndex((i) => i.id === +itemsColumn.dataset.id);
+            if (dataId === newColumnId) {
+              const indexBefore = columsLocal[dataId].findIndex(
+                (i) => i.id === +itemsColumn.dataset.id
+              );
+              columsLocal[dataId].splice(indexBefore, 0, todoLocal[0]);
+            } else {
+              const indexBefore = columsLocal[newColumnId].findIndex(
+                (i) => i.id === +itemsColumn.dataset.id
+              );
               columsLocal[newColumnId].splice(indexBefore, 0, todoLocal[0]);
-          }
-          
+            }
           } else {
             return;
           }
         }
 
         if (closest.className === 'main-kanban-column-body') {
-          if (!columsLocal.hasOwnProperty(newColumnId)) columsLocal[newColumnId] = [];
+          if (!Object.hasOwn(columsLocal, newColumnId)) {
+            columsLocal[newColumnId] = [];
+          }
           if (todoLocal[0]) columsLocal[newColumnId].push(todoLocal[0]);
       
           item.classList.remove('dragged');
@@ -123,11 +122,16 @@ export default function drag(main, el) {
         }
 
         changeItemsCount(newColumn, columsLocal[newColumnId]);
-        changeItemsCount(main.querySelector(`[data-id="${dataId}"]`), columsLocal[dataId]);
+        changeItemsCount(
+          main.querySelector(`[data-id="${dataId}"]`),
+          columsLocal[dataId]
+        );
         localStorage.setItem('columns', JSON.stringify(columsLocal));
         draggedEl = null;
-      });
-    };
-  };
-});
+        container.removeEventListener('mouseup', mouseUpHandler);
+      };
+
+      container.addEventListener('mouseup', mouseUpHandler);
+    }
+  });
 }
