@@ -339,6 +339,9 @@
 .main-kanban-item.dragged {
   cursor: grabbing !important; 
 }
+.main-kanban *:not(.main-kanban-item.dragged) {
+  pointer-events: none !important;
+}
 .main-kanban-item.dragged {
   width: 235px !important;
   min-width: 235px !important;
