@@ -7,11 +7,20 @@ export default function dragAndDrop(main) {
 
   main.addEventListener('dragstart', (e) => {
     if (e.target.classList.contains('main-kanban-item')) {
-     
+      e.target.classList.add('dragging');
+      document.body.style.cursor = 'grabbing';
+      e.target.style.cursor = 'grabbing';
       e.dataTransfer.setData('text/plain', e.target.dataset.id);
     }
   });
-
+  main.addEventListener('dragend', (e) => {
+    if (e.target.classList.contains('main-kanban-item')) {
+      e.target.classList.remove('dragging');
+      document.body.style.cursor = '';
+      e.target.style.cursor = '';
+      e.target.style.opacity = '1';
+    }
+  });
   main.addEventListener('dragenter', (e) => {
     if (e.target.classList.contains('main-kanban-column-items')) {
       e.target.classList.add('dragged');
