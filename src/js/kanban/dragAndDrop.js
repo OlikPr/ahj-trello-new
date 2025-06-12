@@ -1,11 +1,11 @@
 export default function dragAndDrop(main) {
   function getDragAfterElement(container, y) {
     const draggableElements = [...container.querySelectorAll('.main-kanban-item:not(.dragging)')];
-    
+
     return draggableElements.reduce((closest, child) => {
       const box = child.getBoundingClientRect();
       const offset = y - box.top - box.height / 2;
-      
+
       if (offset < 0 && offset > closest.offset) {
         return { offset, element: child };
       }
@@ -46,7 +46,7 @@ export default function dragAndDrop(main) {
       }, 0);
     }
   });
-    
+
   main.addEventListener('dragend', (e) => {
     if (e.target.classList.contains('main-kanban-item')) {
       e.target.classList.remove('dragging');
@@ -80,7 +80,7 @@ export default function dragAndDrop(main) {
     }
 
     const afterElement = getDragAfterElement(dropColumn, e.clientY);
-    
+
     if (afterElement) {
       dropColumn.insertBefore(todo, afterElement);
     } else {
@@ -112,7 +112,7 @@ export default function dragAndDrop(main) {
       const todoLocal = columsLocal[keyForTodo].splice(index, 1);
       const columnItems = e.target.querySelector('.main-kanban-column-items');
       const keyForColumnItems = columnItems.closest('.main-kanban-column').dataset.id;
-     
+
       if (!Object.hasOwn(columsLocal, keyForColumnItems)) {
         columsLocal[keyForColumnItems] = [];
       }

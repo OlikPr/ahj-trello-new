@@ -14,7 +14,7 @@ export default function drag(main, el) {
   let draggedEl = null;
   let dataId = null;
   let wrapper = null;
-  
+
   item.addEventListener('mousedown', (e) => {
     const coords = getCoords(item);
     const shiftX = e.pageX - coords.left;
@@ -25,13 +25,13 @@ export default function drag(main, el) {
       if (Math.abs(event.clientX - e.clientX) > 5 || Math.abs(event.clientY - e.clientY) > 5) {
         hasMoved = true;
       }
-      
+
       if (hasMoved) {
         item.style.left = `${event.pageX - shiftX}px`;
         item.style.top = `${event.pageY - shiftY}px`;
       }
     }
-    
+  
     if (e.target.dataset.toggle !== 'item-remove') {
       e.preventDefault();
       if (draggedEl) return;
@@ -56,7 +56,7 @@ export default function drag(main, el) {
       };
 
       container.addEventListener('mousemove', mouseMoving);
-      
+
       const mouseUpHandler = (event) => {
         if (!draggedEl) return;
 
@@ -73,7 +73,7 @@ export default function drag(main, el) {
           let itemsColumn = closest.closest('.main-kanban-item');
 
           if (itemsColumn) {
-            const center = itemsColumn.getBoundingClientRect().y 
+            const center = itemsColumn.getBoundingClientRect().y
               + itemsColumn.getBoundingClientRect().height / 2;
 
             if (event.clientY > center) {
@@ -91,12 +91,12 @@ export default function drag(main, el) {
 
             if (dataId === newColumnId) {
               const indexBefore = columsLocal[dataId].findIndex(
-                (i) => i.id === +itemsColumn.dataset.id
+                (i) => i.id === +itemsColumn.dataset.id,
               );
               columsLocal[dataId].splice(indexBefore, 0, todoLocal[0]);
             } else {
               const indexBefore = columsLocal[newColumnId].findIndex(
-                (i) => i.id === +itemsColumn.dataset.id
+                (i) => i.id === +itemsColumn.dataset.id,
               );
               columsLocal[newColumnId].splice(indexBefore, 0, todoLocal[0]);
             }
@@ -110,7 +110,7 @@ export default function drag(main, el) {
             columsLocal[newColumnId] = [];
           }
           if (todoLocal[0]) columsLocal[newColumnId].push(todoLocal[0]);
-      
+
           item.classList.remove('dragged');
           container.removeEventListener('mousemove', mouseMoving);
 
@@ -124,7 +124,7 @@ export default function drag(main, el) {
         changeItemsCount(newColumn, columsLocal[newColumnId]);
         changeItemsCount(
           main.querySelector(`[data-id="${dataId}"]`),
-          columsLocal[dataId]
+          columsLocal[dataId],
         );
         localStorage.setItem('columns', JSON.stringify(columsLocal));
         draggedEl = null;
