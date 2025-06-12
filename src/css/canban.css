@@ -321,7 +321,8 @@
     scrollbar-shadow-color: #fff;
     scrollbar-highlight-color: #fff;
     -webkit-transition: .2s;
-    transition: .2s;
+    min-height: 100px;
+    transition: background-color 0.2s ease;
 }
 
 .main-kanban-item {
