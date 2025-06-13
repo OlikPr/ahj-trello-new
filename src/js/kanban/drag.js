@@ -45,7 +45,7 @@ export default function drag(main, el) {
       draggedEl = e.target;
 
       item.classList.add('dragged');
-      document.body.appendChild(item);
+      document.body.append(item);
 
       moveAt(e);
 

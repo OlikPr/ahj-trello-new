@@ -29,6 +29,10 @@ export default function dragAndDrop(main) {
     localStorage.setItem('columns', JSON.stringify(columns));
   }
 
+  function validateCardContent(content) {
+    return content && content.trim() !== '';
+  }
+
   main.addEventListener('dragleave', (e) => {
     if (e.target.classList.contains('dragged')) {
       e.target.classList.remove('dragged');
@@ -38,11 +42,16 @@ export default function dragAndDrop(main) {
   function createDropIndicator() {
     dropIndicator = document.createElement('div');
     dropIndicator.className = 'drop-indicator';
-    document.body.appendChild(dropIndicator);
+    document.body.append(dropIndicator);
     return dropIndicator;
   }
   main.addEventListener('dragstart', (e) => {
     if (e.target.classList.contains('main-kanban-item')) {
+      const cardText = e.target.querySelector('.tasks-kanban-item-text')?.textContent;
+      if (!validateCardContent(cardText)) {
+        e.preventDefault();
+        return;
+      }
       e.target.classList.add('dragging');
       document.body.style.cursor = 'grabbing';
       e.target.style.cursor = 'grabbing';
@@ -111,6 +120,11 @@ export default function dragAndDrop(main) {
 
   main.addEventListener('drop', (e) => {
     const todo = main.querySelector(`[data-id="${e.dataTransfer.getData('text/plain')}"]`);
+    if (!todo) return;
+    const cardText = todo.querySelector('.tasks-kanban-item-text')?.textContent;
+    if (!validateCardContent(cardText)) {
+      return;
+    }
     const dropColumn = e.target.closest('.main-kanban-column-body');
     const currentColumn = todo.closest('.main-kanban-column');
 
@@ -123,7 +137,7 @@ export default function dragAndDrop(main) {
     if (afterElement) {
       dropColumn.insertBefore(todo, afterElement);
     } else {
-      dropColumn.appendChild(todo);
+      dropColumn.append(todo);
     }
 
     if (['span', 'tasks-kanban-item-text', 'tasks-kanban-item'].includes(elemBelow.tagName.toLowerCase() || elemBelow.className)) {
