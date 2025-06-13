@@ -163,6 +163,10 @@ export default function dragAndDrop(main) {
       const keyForTodo = todo.closest('.main-kanban-column').dataset.id;
       const index = columsLocal[keyForTodo].findIndex((item) => item.id === +todo.dataset.id);
       const todoLocal = columsLocal[keyForTodo].splice(index, 1);
+      if (todoLocal.length === 0 || !todoLocal[0].text || todoLocal[0].text.trim() === '') {
+        columsLocal[keyForTodo].splice(index, 0, ...todoLocal);
+        return;
+      }
       const columnItems = e.target.querySelector('.main-kanban-column-items');
       const keyForColumnItems = columnItems.closest('.main-kanban-column').dataset.id;
 
