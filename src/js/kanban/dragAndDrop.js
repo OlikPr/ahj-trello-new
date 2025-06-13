@@ -1,7 +1,7 @@
 export default function dragAndDrop(main) {
   let dropIndicator = null;
   let draggedItem = null;
-  let elemBelow = null;
+  
 
   function isValidCard(card) {
     if (!card) return false;
@@ -113,8 +113,8 @@ export default function dragAndDrop(main) {
       e.target.classList.add('dragged');
     }
   });
-  let elemBelow('');
-  
+  let elemBelow = '';
+
   main.addEventListener('dragover', (e) => {
     e.preventDefault();
     if (!draggedItem || !isValidCard(draggedItem)) return;

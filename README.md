@@ -1,7 +1,8 @@
 ### Trello
 [![Build status](https://ci.appveyor.com/api/projects/status/eb4eqovi337v3yie?svg=true)](https://ci.appveyor.com/project/OlikPr/ahj-trello-new)
 
-deployment: https://github.com/OlikPr/ahj-trello-new.git
+deployment: https://olikpr.github.io/ahj-trello-new/
+
 #### Легенда
 
 Вы делаете внутрикорпоративную систему управления задачами, и вашему руководству очень нравится подход, который используется в [Trello](https://trello.com):
