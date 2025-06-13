@@ -1,4 +1,9 @@
 export default function dragAndDrop(main) {
+  function isValidCard(card) {
+    if (!card) return false;
+    const textElement = card.querySelector('.tasks-kanban-item-text');
+    return textElement && textElement.textContent.trim() !== '';
+  }
   function getDragAfterElement(container, y) {
     const draggableElements = [...container.querySelectorAll('.main-kanban-item:not(.dragging)')];
 
@@ -14,6 +19,7 @@ export default function dragAndDrop(main) {
   }
 
   function updateLocalStorage(item, fromColumn, toColumn) {
+    if (!isValidCard(item)) return false;
     const columns = JSON.parse(localStorage.columns || '{}');
     const fromKey = fromColumn.closest('.main-kanban-column').dataset.id;
     const toKey = toColumn.closest('.main-kanban-column').dataset.id;
@@ -23,6 +29,10 @@ export default function dragAndDrop(main) {
     if (taskIndex === -1) return;
 
     const [task] = columns[fromKey].splice(taskIndex, 1);
+    if (!task || !task.text || task.text.trim() === '') {
+      columns[fromKey].splice(taskIndex, 0, task);
+      return false;
+    }
     if (!columns[toKey]) columns[toKey] = [];
     columns[toKey].push(task);
 
@@ -47,8 +57,7 @@ export default function dragAndDrop(main) {
   }
   main.addEventListener('dragstart', (e) => {
     if (e.target.classList.contains('main-kanban-item')) {
-      const cardText = e.target.querySelector('.tasks-kanban-item-text')?.textContent;
-      if (!validateCardContent(cardText)) {
+      if (!isValidCard(e.target)) {
         e.preventDefault();
         return;
       }
@@ -75,6 +84,14 @@ export default function dragAndDrop(main) {
     }
     const dragged = document.querySelector('.dragged');
     if (dragged) dragged.classList.remove('dragged');
+    if (draggedItem && !isValidCard(draggedItem)) {
+        const originalColumn = main.querySelector(`[data-id="${draggedItem.dataset.id}"]`)?.closest('.main-kanban-column-items');
+        if (originalColumn) {
+          originalColumn.append(draggedItem);
+        }
+      }
+      
+      draggedItem = null;
     }
   });
 
