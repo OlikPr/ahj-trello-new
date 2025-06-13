@@ -105,7 +105,10 @@ export default function dragAndDrop(main) {
 
   main.addEventListener('dragover', (e) => {
     e.preventDefault();
+    if (!draggedItem || !isValidCard(draggedItem)) return;
     e.dataTransfer.dropEffect = 'move';
+    const targetItem = e.target.closest('.main-kanban-item');
+    const columnBody = e.target.closest('.main-kanban-column-body');
     elemBelow = e.target;
      if (targetItem) {
       const rect = targetItem.getBoundingClientRect();
@@ -157,47 +160,16 @@ export default function dragAndDrop(main) {
       dropColumn.append(todo);
     }
 
-    if (['span', 'tasks-kanban-item-text', 'tasks-kanban-item'].includes(elemBelow.tagName.toLowerCase() || elemBelow.className)) {
-      elemBelow = elemBelow.closest('.main-kanban-item');
+    if (!updateLocalStorage(todo, currentColumn, dropColumn)) {
+      const originalColumn = main.querySelector(`[data-id="${todo.dataset.id}"]`)?.closest('.main-kanban-column-items');
+      if (originalColumn) {
+        originalColumn.append(todo);
+      }
     }
-
-    updateLocalStorage(todo, currentColumn, dropColumn);
-
-    if (elemBelow.classList.contains('main-kanban-item')) {
-      const center = elemBelow.getBoundingClientRect().y
-        + elemBelow.getBoundingClientRect().height / 2;
-
-      if (e.clientY > center && elemBelow.nextElementSibling !== null) {
-        elemBelow = elemBelow.nextElementSibling;
-      }
-
-      elemBelow.parentElement.insertBefore(todo, elemBelow);
-      todo.className = elemBelow.className;
-    }
-
-    if (e.target.classList.contains('main-kanban-column-body')) {
-      const columsLocal = JSON.parse(localStorage.columns);
-      const keyForTodo = todo.closest('.main-kanban-column').dataset.id;
-      const index = columsLocal[keyForTodo].findIndex((item) => item.id === +todo.dataset.id);
-      const todoLocal = columsLocal[keyForTodo].splice(index, 1);
-      if (todoLocal.length === 0 || !todoLocal[0].text || todoLocal[0].text.trim() === '') {
-        columsLocal[keyForTodo].splice(index, 0, ...todoLocal);
-        return;
-      }
-      const columnItems = e.target.querySelector('.main-kanban-column-items');
-      const keyForColumnItems = columnItems.closest('.main-kanban-column').dataset.id;
-
-      if (!Object.hasOwn(columsLocal, keyForColumnItems)) {
-        columsLocal[keyForColumnItems] = [];
-      }
-
-      columsLocal[keyForColumnItems].push(todoLocal[0]);
-      localStorage.setItem('columns', JSON.stringify(columsLocal));
-      columnItems.append(todo);
-
-      if (e.target.classList.contains('dragged')) {
-        e.target.classList.remove('dragged');
-      }
+  
+    if (dropIndicator) {
+      dropIndicator.remove();
+      dropIndicator = null;
     }
   });
 }

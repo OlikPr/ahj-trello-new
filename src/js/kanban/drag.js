@@ -49,7 +49,7 @@ export default function drag(main, el) {
 
       moveAt(e);
 
-      const mouseMoving = function (event) {
+      const mouseMoving = function handleMouseMove(event) {
         event.preventDefault();
         if (!draggedEl) return;
         moveAt(event);
