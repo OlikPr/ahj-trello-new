@@ -1,7 +1,6 @@
 export default function dragAndDrop(main) {
   let dropIndicator = null;
   let draggedItem = null;
-  
 
   function isValidCard(card) {
     if (!card) return false;
@@ -25,7 +24,7 @@ export default function dragAndDrop(main) {
 
   function updateLocalStorage(item, fromColumn, toColumn) {
     if (!isValidCard(item)) return false;
-    
+
     const columns = JSON.parse(localStorage.columns || '{}');
     const fromKey = fromColumn.closest('.main-kanban-column').dataset.id;
     const toKey = toColumn.closest('.main-kanban-column').dataset.id;
@@ -72,11 +71,11 @@ export default function dragAndDrop(main) {
       document.body.style.cursor = 'grabbing';
       e.target.style.cursor = 'grabbing';
       e.dataTransfer.setData('text/plain', e.target.dataset.id);
-      
+
       setTimeout(() => {
         e.target.style.opacity = '0.4';
       }, 0);
-      
+
       dropIndicator = createDropIndicator();
     }
   });
@@ -87,15 +86,15 @@ export default function dragAndDrop(main) {
       document.body.style.cursor = '';
       e.target.style.cursor = '';
       e.target.style.opacity = '1';
-      
+
       if (dropIndicator) {
         dropIndicator.remove();
         dropIndicator = null;
       }
-      
+
       const dragged = document.querySelector('.dragged');
       if (dragged) dragged.classList.remove('dragged');
-      
+
       if (draggedItem && !isValidCard(draggedItem)) {
         const originalColumn = main.querySelector(`[data-id="${draggedItem.dataset.id}"]`)
           ?.closest('.main-kanban-column-items');
@@ -103,7 +102,7 @@ export default function dragAndDrop(main) {
           originalColumn.append(draggedItem);
         }
       }
-      
+
       draggedItem = null;
     }
   });
@@ -118,7 +117,7 @@ export default function dragAndDrop(main) {
   main.addEventListener('dragover', (e) => {
     e.preventDefault();
     if (!draggedItem || !isValidCard(draggedItem)) return;
-    
+
     e.dataTransfer.dropEffect = 'move';
     elemBelow = e.target;
     const targetItem = e.target.closest('.main-kanban-item');
@@ -127,7 +126,7 @@ export default function dragAndDrop(main) {
     if (targetItem) {
       const rect = targetItem.getBoundingClientRect();
       const center = rect.top + rect.height / 2;
-      
+
       if (e.clientY < center) {
         dropIndicator.style.width = `${rect.width}px`;
         dropIndicator.style.position = 'fixed';
